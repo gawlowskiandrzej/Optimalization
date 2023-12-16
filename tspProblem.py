@@ -29,28 +29,31 @@ class tspProblem:
         bestRoute = [0]*self.N
         min = float("inf")
         
-        for i in list(itertools.permutations(list(range(self.N)))):
+        for i in itertools.permutations(list(range(self.N))):
 
             overallTime = 0
             vertexList = []
-
+            permutation = list(i)
+            isAvaileble = True
             for j in range(self.N-1):
-               time = self.calculateTimeToTravel(AdjMatrix, i[j], i[j+1])
-               vertexList.append((i[j],i[j+1]))
-               if time>0:
+               time = self.calculateTimeToTravel(AdjMatrix, permutation[j], permutation[j+1])
+               vertexList.append((permutation[j],permutation[j+1]))
+               if time>-1:
                     overallTime += time
                else:
+                    isAvaileble = False
                     break
-               
-            time = self.calculateTimeToTravel(AdjMatrix, i[-1], i[0])
-            if time > 0:
-                vertexList.append((i[-1],i[0]))
+            if isAvaileble == False:
+                continue
+            time = self.calculateTimeToTravel(AdjMatrix, permutation[-1], permutation[0])
+            if time > -1:
+                vertexList.append((permutation[-1],permutation[0]))
                 overallTime += time
             else:
                 continue
 
             if self.CheckIfMin(overallTime, min) == True:
-                bestRoute = i
+                bestRoute = permutation
                 min = overallTime
         return bestRoute, min
     '''
@@ -83,7 +86,7 @@ class tspProblem:
                 bestRoute = i
                 min = overallDist
         return bestRoute'''
-    
+    '''    
     def TSPGreedy(self, distances):
         visited = [False]*self.N
         best_path = []
@@ -107,8 +110,8 @@ class tspProblem:
             visited[curr] = True
         
         best_path.append(start) 
-    
-    def TSPGreedywithUnAvailabeRode(self, adjmatrix):
+    '''   
+    def TSPGreedy(self, adjmatrix):
         visited = [False]*self.N
         best_path = []
         otime = 0
@@ -155,11 +158,11 @@ class tspProblem:
             min_time = float('inf')
             next_vertex = None
             random.shuffle(iterators)
-            for neightbor in iterators:
-                time = self.calculateTimeToTravel(adjmatrix,curr,neightbor)
-                if time > -1 and not visited[neightbor] and time < min_time:
+            for neighbour in iterators:
+                time = self.calculateTimeToTravel(adjmatrix,curr,neighbour)
+                if time > -1 and not visited[neighbour] and time < min_time:
                     min_time = time
-                    next_vertex = neightbor
+                    next_vertex = neighbour
 
             if next_vertex is None:
                 return []

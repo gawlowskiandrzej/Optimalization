@@ -7,6 +7,7 @@ class generator:
         self.N = N
         
     def generateAdjencyMatrixList(self, ConstraintsList):
+        #Generowanie macierzy sąsiedztwa przy ograniczeniach
         n = self.N
         AdjMatrList = []
         for k in ConstraintsList:

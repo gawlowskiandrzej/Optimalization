@@ -6,18 +6,21 @@ class tspProblem:
         self.N = N
 
     def CheckIfMin(self,dist, min):
+        #sprawdzanie czy wystąpiło minimum
         if dist < min:
             return True
         else:
             return False
     
     def CheckIfAvailebale(self,elem):
+        #sprawdzanie czy dana ścieżka jest dostępna
         if (elem is None):
             return False
         else:
             return True
         
     def calculateTimeToTravel(self,AdjMatrix, i, j):
+        #zliczanie czasu potrzebnego do pokonania ścieżki wyznacznik
         distance = AdjMatrix[0][i].pathList[j]
         roadLoad = AdjMatrix[1][i].pathList[j]
         if not self.CheckIfAvailebale(roadLoad):
@@ -28,7 +31,7 @@ class tspProblem:
     def TSPBruteForce(self, AdjMatrix):
         bestRoute = [0]*self.N
         min = float("inf")
-        
+        #przeszukiwanie całej puli rozwiązań
         for i in itertools.permutations(list(range(self.N))):
 
             overallTime = 0
@@ -43,8 +46,10 @@ class tspProblem:
                else:
                     isAvaileble = False
                     break
+            #sprawdzenie czy nie wystąpiła ścieżka z niedostępnym wieszchołkiem jeżeli tak pomiń
             if isAvaileble == False:
                 continue
+            #sprawdzenie czy droga do początkowego wieszchołka jest możliwa
             time = self.calculateTimeToTravel(AdjMatrix, permutation[-1], permutation[0])
             if time > -1:
                 vertexList.append((permutation[-1],permutation[0]))
@@ -56,61 +61,7 @@ class tspProblem:
                 bestRoute = permutation
                 min = overallTime
         return bestRoute, min
-    '''
-    def TSPBruteForcewithUnAvailabe(self, adjmatrix):
-        bestRoute = [0]*self.N
-        min = float("inf")
-        
-        for i in list(itertools.permutations(list(range(self.N)))):
-
-            overallDist = 0
-            distList = []
-            isAvaileble = True
-
-            for j in range(self.N-1):
-               if distances[i[j]].pathList[i[j+1]] is None:
-                   isAvaileble = False
-                   break
-               distList.append(distances[i[j]].pathList[i[j+1]])
-               overallDist += distances[i[j]].pathList[i[j+1]]
-
-            if isAvaileble == False:
-                continue
-            if distances[i[-1]].pathList[i[0]] != None:
-                distList.append(distances[i[-1]].pathList[i[0]])
-                overallDist += distances[i[j]].pathList[i[j+1]]
-            else:
-                continue
-
-            if self.CheckIfMin(overallDist, min) == True:
-                bestRoute = i
-                min = overallDist
-        return bestRoute'''
-    '''    
-    def TSPGreedy(self, distances):
-        visited = [False]*self.N
-        best_path = []
-
-        start = 0
-        best_path.append(0)
-        curr = start
-        visited[0] = True
-
-        for i in range(self.N-1):
-            min_dist = float('inf')
-            next_city = None
-
-            for neightbor in range(self.N):
-                if  not visited[neightbor] and distances[curr].pathList[neightbor] < min_dist:
-                    min_dist = distances[curr].pathList[neightbor]
-                    next_city = neightbor
-            
-            curr = next_city
-            best_path.append(curr)
-            visited[curr] = True
-        
-        best_path.append(start) 
-    '''   
+    
     def TSPGreedy(self, adjmatrix):
         visited = [False]*self.N
         best_path = []
@@ -129,13 +80,14 @@ class tspProblem:
                 if time > -1 and not visited[neightbor] and time < min_time:
                     min_time = time
                     next_vertex = neightbor
+            #jeżeli nie znalazł drogi do przejscia dalej, kończ algorytm z brakiem rozwiązania
             if next_vertex is None:
                 return []
             curr = next_vertex
             best_path.append(curr)
             otime += min_time
             visited[curr] = True
-        
+        #sprawdź czy ścieżka do początkowego wieszchołka jest przejezdna, jeżeli nie to kończ algorytm
         time = self.calculateTimeToTravel(adjmatrix, curr, start)
         if time > -1:
             best_path.append(start) 
@@ -145,6 +97,7 @@ class tspProblem:
         return best_path, otime
 
     def TSPGreedyRandomise(self,adjmatrix, iterators):
+        #ulosowiony zachłanny
         visited = [False]*self.N
         best_path = []
 
@@ -157,6 +110,7 @@ class tspProblem:
         for i in iterators[0:len(iterators)-1]:
             min_time = float('inf')
             next_vertex = None
+            #generuj losową kolejność wieszchołków
             random.shuffle(iterators)
             for neighbour in iterators:
                 time = self.calculateTimeToTravel(adjmatrix,curr,neighbour)
